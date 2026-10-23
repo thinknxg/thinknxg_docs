@@ -1,0 +1,273 @@
+{
+ "actions": [],
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_brand",
+  "brand_name",
+  "brand_logo",
+  "brand_logo_dark",
+  "favicon",
+  "column_break_1",
+  "primary_color",
+  "docs_base_url",
+  "default_space",
+  "use_as_home_page",
+  "section_nav",
+  "header_links",
+  "footer_text",
+  "attribution_text",
+  "section_features",
+  "enable_search",
+  "enable_feedback",
+  "enable_page_views",
+  "column_break_2",
+  "enable_copy_markdown",
+  "enable_ai_links",
+  "enable_llms_txt",
+  "column_break_3",
+  "enable_print",
+  "show_last_updated",
+  "section_rebrand",
+  "rebrand_on_save",
+  "rebrand_rules",
+  "section_import",
+  "image_mode",
+  "import_delay",
+  "column_break_4",
+  "request_timeout",
+  "user_agent"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_brand",
+   "fieldtype": "Section Break",
+   "label": "Branding"
+  },
+  {
+   "default": "thinkNXG Docs",
+   "fieldname": "brand_name",
+   "fieldtype": "Data",
+   "label": "Brand Name"
+  },
+  {
+   "fieldname": "brand_logo",
+   "fieldtype": "Attach Image",
+   "label": "Logo (light theme)"
+  },
+  {
+   "fieldname": "brand_logo_dark",
+   "fieldtype": "Attach Image",
+   "label": "Logo (dark theme)"
+  },
+  {
+   "fieldname": "favicon",
+   "fieldtype": "Attach Image",
+   "label": "Favicon"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "#0A7C78",
+   "fieldname": "primary_color",
+   "fieldtype": "Color",
+   "label": "Accent Color"
+  },
+  {
+   "default": "https://docs.thinknxg.com",
+   "description": "Used for canonical links, llms.txt and sitemap",
+   "fieldname": "docs_base_url",
+   "fieldtype": "Data",
+   "label": "Public Base URL"
+  },
+  {
+   "fieldname": "default_space",
+   "fieldtype": "Link",
+   "label": "Default Space",
+   "options": "Docs Space"
+  },
+  {
+   "description": "Sets Website Settings \u2192 Home Page so / opens the default space",
+   "fieldname": "use_as_home_page",
+   "fieldtype": "Check",
+   "label": "Use Default Space as Site Home Page"
+  },
+  {
+   "fieldname": "section_nav",
+   "fieldtype": "Section Break",
+   "label": "Header & Footer"
+  },
+  {
+   "fieldname": "header_links",
+   "fieldtype": "Table",
+   "label": "Header Links",
+   "options": "Docs Nav Link"
+  },
+  {
+   "default": "\u00a9 thinkNXG. All rights reserved.",
+   "fieldname": "footer_text",
+   "fieldtype": "Small Text",
+   "label": "Footer Text"
+  },
+  {
+   "description": "Shown under every page. Not rebranded. Use it for any upstream license attribution you are required to keep.",
+   "fieldname": "attribution_text",
+   "fieldtype": "Small Text",
+   "label": "Attribution / License Notice"
+  },
+  {
+   "fieldname": "section_features",
+   "fieldtype": "Section Break",
+   "label": "Page Features"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_search",
+   "fieldtype": "Check",
+   "label": "Search (Ctrl K)"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_feedback",
+   "fieldtype": "Check",
+   "label": "\"Was this helpful?\" Feedback"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_page_views",
+   "fieldtype": "Check",
+   "label": "Count Page Views"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_copy_markdown",
+   "fieldtype": "Check",
+   "label": "Copy Page as Markdown"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_ai_links",
+   "fieldtype": "Check",
+   "label": "Open in ChatGPT / Claude Links"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_llms_txt",
+   "fieldtype": "Check",
+   "label": "Serve llms.txt and .md Pages"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable_print",
+   "fieldtype": "Check",
+   "label": "Print / Save as PDF"
+  },
+  {
+   "default": "1",
+   "fieldname": "show_last_updated",
+   "fieldtype": "Check",
+   "label": "Show Last Updated"
+  },
+  {
+   "description": "Text rules replace product names outside code blocks and URLs. URL rules rewrite link prefixes. Links into imported spaces are rewritten automatically from each Space's Source Base URL.",
+   "fieldname": "section_rebrand",
+   "fieldtype": "Section Break",
+   "label": "Rebranding Rules"
+  },
+  {
+   "default": "1",
+   "fieldname": "rebrand_on_save",
+   "fieldtype": "Check",
+   "label": "Apply Rules When Pages Are Saved"
+  },
+  {
+   "fieldname": "rebrand_rules",
+   "fieldtype": "Table",
+   "label": "Rules",
+   "options": "Docs Rebrand Rule"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_import",
+   "fieldtype": "Section Break",
+   "label": "Import"
+  },
+  {
+   "default": "Download to this site",
+   "fieldname": "image_mode",
+   "fieldtype": "Select",
+   "label": "Images",
+   "options": "Download to this site\nLink to source"
+  },
+  {
+   "default": "0.15",
+   "fieldname": "import_delay",
+   "fieldtype": "Float",
+   "label": "Delay Between Requests (seconds)"
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (seconds)"
+  },
+  {
+   "default": "thinkNXG-Docs-Importer/1.0",
+   "fieldname": "user_agent",
+   "fieldtype": "Data",
+   "label": "User Agent"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "thinkNXG Docs",
+ "name": "Docs Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 0,
+   "print": 1,
+   "read": 1,
+   "report": 0,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 0,
+   "print": 1,
+   "read": 1,
+   "report": 0,
+   "role": "Docs Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -1,0 +1,363 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-10-21 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "sidebar_label",
+  "page_type",
+  "column_break_1",
+  "space",
+  "parent_docs_page",
+  "sort_order",
+  "published",
+  "section_url",
+  "slug",
+  "route",
+  "column_break_2",
+  "link_to_page",
+  "external_url",
+  "section_content",
+  "description",
+  "content",
+  "section_brand",
+  "skip_rebrand",
+  "column_break_3",
+  "lock_from_import",
+  "section_source",
+  "source_url",
+  "source_updated",
+  "column_break_4",
+  "import_key",
+  "source_title",
+  "section_source_content",
+  "source_content",
+  "section_stats",
+  "views",
+  "column_break_5",
+  "helpful_count",
+  "column_break_6",
+  "not_helpful_count",
+  "is_group",
+  "lft",
+  "rgt",
+  "old_parent"
+ ],
+ "fields": [
+  {
+   "bold": 1,
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_global_search": 1,
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1
+  },
+  {
+   "description": "Optional shorter label for the sidebar",
+   "fieldname": "sidebar_label",
+   "fieldtype": "Data",
+   "label": "Sidebar Label"
+  },
+  {
+   "default": "Page",
+   "description": "Page = content, Group = sidebar section, Link = sidebar shortcut to another page or URL",
+   "fieldname": "page_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Type",
+   "options": "Page\nGroup\nLink"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "space",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Space",
+   "options": "Docs Space",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "parent_docs_page",
+   "fieldtype": "Link",
+   "label": "Parent Group",
+   "options": "Docs Page",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "sort_order",
+   "fieldtype": "Int",
+   "label": "Sort Order"
+  },
+  {
+   "default": "1",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Published"
+  },
+  {
+   "fieldname": "section_url",
+   "fieldtype": "Section Break",
+   "label": "URL"
+  },
+  {
+   "depends_on": "eval:doc.page_type=='Page'",
+   "description": "Path after the space, e.g. sales-invoice",
+   "fieldname": "slug",
+   "fieldtype": "Data",
+   "label": "Slug",
+   "mandatory_depends_on": "eval:doc.page_type=='Page'",
+   "search_index": 1
+  },
+  {
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "label": "Route",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.page_type=='Link'",
+   "fieldname": "link_to_page",
+   "fieldtype": "Link",
+   "label": "Link To Page",
+   "options": "Docs Page"
+  },
+  {
+   "depends_on": "eval:doc.page_type=='Link'",
+   "fieldname": "external_url",
+   "fieldtype": "Data",
+   "label": "External URL",
+   "options": "URL"
+  },
+  {
+   "depends_on": "eval:doc.page_type=='Page'",
+   "fieldname": "section_content",
+   "fieldtype": "Section Break",
+   "label": "Content"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Meta Description"
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Markdown Editor",
+   "label": "Content"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_brand",
+   "fieldtype": "Section Break",
+   "label": "Branding & Import Control"
+  },
+  {
+   "description": "Keep text exactly as typed (rebrand rules are not applied on save)",
+   "fieldname": "skip_rebrand",
+   "fieldtype": "Check",
+   "label": "Skip Automatic Rebranding"
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Manual edits are kept; a re-import will not overwrite this page",
+   "fieldname": "lock_from_import",
+   "fieldtype": "Check",
+   "label": "Lock From Re-import"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_source",
+   "fieldtype": "Section Break",
+   "label": "Source"
+  },
+  {
+   "fieldname": "source_url",
+   "fieldtype": "Data",
+   "label": "Source URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "source_updated",
+   "fieldtype": "Date",
+   "label": "Source Last Updated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "import_key",
+   "fieldtype": "Data",
+   "label": "Import Key",
+   "no_copy": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "source_title",
+   "fieldtype": "Data",
+   "label": "Source Title",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "depends_on": "eval:doc.source_content",
+   "fieldname": "section_source_content",
+   "fieldtype": "Section Break",
+   "label": "Original Markdown (before rebranding)"
+  },
+  {
+   "fieldname": "source_content",
+   "fieldtype": "Code",
+   "label": "Source Content",
+   "no_copy": 1,
+   "options": "Markdown",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_stats",
+   "fieldtype": "Section Break",
+   "label": "Stats"
+  },
+  {
+   "default": "0",
+   "fieldname": "views",
+   "fieldtype": "Int",
+   "label": "Views",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "helpful_count",
+   "fieldtype": "Int",
+   "label": "Helpful",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "not_helpful_count",
+   "fieldtype": "Int",
+   "label": "Not Helpful",
+   "no_copy": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Group",
+   "read_only": 1
+  },
+  {
+   "fieldname": "lft",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Left",
+   "no_copy": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "rgt",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Right",
+   "no_copy": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "old_parent",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Old Parent",
+   "options": "Docs Page",
+   "read_only": 1
+  }
+ ],
+ "is_tree": 1,
+ "links": [],
+ "modified": "2026-10-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "thinkNXG Docs",
+ "name": "Docs Page",
+ "nsm_parent_field": "parent_docs_page",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Docs Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Docs Editor",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "space,route,page_type",
+ "show_title_field_in_link": 1,
+ "sort_field": "lft",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

@@ -1,0 +1,220 @@
+{%- macro render_nodes(nodes, depth) -%}
+<ul class="dx-nav-list" data-depth="{{ depth }}">
+{%- for n in nodes %}
+  {%- if n.type == 'Group' %}
+  {%- set is_open = n.name in open_names %}
+  <li class="dx-nav-group{% if is_open %} is-open{% endif %}">
+    <button type="button" class="dx-nav-toggle" aria-expanded="{{ 'true' if is_open else 'false' }}">
+      <span>{{ n.label | e }}</span>
+      <svg class="dx-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    {{ render_nodes(n.children, depth + 1) }}
+  </li>
+  {%- else %}
+  <li><a class="dx-nav-link{% if n.name == active_name %} is-active{% endif %}" href="{{ n.url | e }}"{% if n.name == active_name %} aria-current="page"{% endif %}{% if n.external %} target="_blank" rel="noopener"{% endif %}>{{ n.label | e }}{% if n.external %}<svg class="dx-ext" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3L6 10M11 9v4H3V5h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>{% endif %}</a></li>
+  {%- endif %}
+{%- endfor %}
+</ul>
+{%- endmacro -%}
+<!doctype html>
+<html lang="{{ (space.language if space else None) or 'en' }}" dir="{{ 'rtl' if space and space.direction == 'RTL' else 'ltr' }}" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page_title | e }}</title>
+{% if meta_description %}<meta name="description" content="{{ meta_description | e }}">{% endif %}
+<link rel="canonical" href="{{ canonical_url | e }}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ page_title | e }}">
+{% if meta_description %}<meta property="og:description" content="{{ meta_description | e }}">{% endif %}
+<meta property="og:url" content="{{ canonical_url | e }}">
+<meta property="og:site_name" content="{{ brand_name | e }}">
+{% if md_url %}<link rel="alternate" type="text/markdown" href="{{ md_url | e }}">{% endif %}
+{% if is_404 %}<meta name="robots" content="noindex">{% endif %}
+<link rel="icon" href="{{ (settings.favicon or '/assets/thinknxg_docs/images/logo.svg') | e }}">
+<script>(function(){try{var t=localStorage.getItem("tnxg-docs-theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/thinknxg_docs/css/docs.css?v={{ asset_version }}">
+<style>:root{--dx-accent:{{ accent | e }};}</style>
+</head>
+<body>
+<a class="dx-skip" href="#dx-content">{{ _("Skip to content") }}</a>
+
+<header class="dx-header">
+  <div class="dx-header-inner">
+    <button type="button" class="dx-icon-btn dx-menu-btn" data-dx-menu aria-label="{{ _('Open navigation') }}" aria-controls="dx-sidebar" aria-expanded="false">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+
+    <a class="dx-brand" href="/{{ space.name if space else '' }}">
+      {%- if settings.brand_logo %}
+      <img class="dx-logo dx-logo-light" src="{{ settings.brand_logo | e }}" alt="{{ brand_name | e }}">
+      <img class="dx-logo dx-logo-dark" src="{{ (settings.brand_logo_dark or settings.brand_logo) | e }}" alt="">
+      {%- else %}
+      <img class="dx-mark" src="/assets/thinknxg_docs/images/logo.svg" alt="" width="26" height="26">
+      <span class="dx-brand-name">{{ brand_name | e }}</span>
+      {%- endif %}
+    </a>
+
+    {% if spaces %}
+    <div class="dx-switcher" data-dx-switcher>
+      <button type="button" class="dx-switcher-btn" aria-haspopup="true" aria-expanded="false">
+        <span>{{ (space.title if space else _("Spaces")) | e }}</span>
+        <svg class="dx-chev dx-chev-down" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="dx-switcher-menu" role="menu" hidden>
+        {% for s in spaces %}
+        <a role="menuitem" href="{{ s.url | e }}" class="dx-switcher-item{% if s.active %} is-active{% endif %}">
+          <span class="dx-switcher-title">{{ s.title | e }}{% if not s.published %} <em>({{ _("draft") }})</em>{% endif %}</span>
+          {% if s.description %}<span class="dx-switcher-desc">{{ s.description | e }}</span>{% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="dx-header-spacer"></div>
+
+    {% if settings.enable_search %}
+    <button type="button" class="dx-search-trigger" data-dx-search-open aria-label="{{ _('Search documentation') }}">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span class="dx-search-label">{{ _("Search") }}</span>
+      <kbd class="dx-kbd" data-dx-kbd>Ctrl K</kbd>
+    </button>
+    {% endif %}
+
+    <nav class="dx-header-links" aria-label="{{ _('Site') }}">
+      {% for l in header_links %}
+      <a href="{{ l.url | e }}"{% if l.open_in_new_tab %} target="_blank" rel="noopener"{% endif %}>{{ l.label | e }}</a>
+      {% endfor %}
+    </nav>
+
+    <button type="button" class="dx-icon-btn" data-dx-theme aria-label="{{ _('Switch light or dark theme') }}">
+      <svg class="dx-sun" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <svg class="dx-moon" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 12.5A6.5 6.5 0 017.5 4a6.5 6.5 0 108.5 8.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="dx-layout">
+  <aside class="dx-sidebar" id="dx-sidebar" aria-label="{{ _('Documentation') }}">
+    <div class="dx-sidebar-inner">
+      {% if tree %}{{ render_nodes(tree, 0) }}{% else %}
+      <p class="dx-empty">{{ _("No pages are published in this space yet.") }}</p>
+      {% endif %}
+    </div>
+  </aside>
+  <div class="dx-backdrop" data-dx-close hidden></div>
+
+  <main class="dx-main" id="dx-content">
+    <article class="dx-article">
+      {% if is_404 %}
+      <p class="dx-crumbs">{{ space.title | e }}</p>
+      <h1 class="dx-title">{{ _("This page isn't here") }}</h1>
+      <div class="dx-prose">
+        <p>{{ _("The address may have changed after the documentation was reorganised. Search for the topic, or start from the beginning of this space.") }}</p>
+        <p><a class="dx-btn" href="/{{ space.name | e }}">{{ _("Go to {0} home").format(space.title) | e }}</a>
+        {% if settings.enable_search %}<button type="button" class="dx-btn dx-btn-quiet" data-dx-search-open>{{ _("Search") }}</button>{% endif %}</p>
+      </div>
+      {% else %}
+      {% if breadcrumbs %}
+      <p class="dx-crumbs">{% for b in breadcrumbs %}<span>{{ b | e }}</span>{% if not loop.last %}<svg class="dx-crumb-sep" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>{% endif %}{% endfor %}</p>
+      {% endif %}
+
+      <div class="dx-title-row">
+        <h1 class="dx-title">{{ page.title | e }}</h1>
+        <div class="dx-actions">
+          {% if edit_url %}<a class="dx-btn dx-btn-quiet" href="{{ edit_url | e }}">{{ _("Edit") }}</a>{% endif %}
+          {% if md_url and (settings.enable_copy_markdown or settings.enable_ai_links or settings.enable_print) %}
+          <div class="dx-menu" data-dx-pagemenu>
+            <button type="button" class="dx-btn dx-btn-quiet" aria-haspopup="true" aria-expanded="false">{{ _("Copy page") }}
+              <svg class="dx-chev dx-chev-down" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="dx-menu-pop" role="menu" hidden>
+              {% if settings.enable_copy_markdown %}
+              <button type="button" role="menuitem" data-dx-copy-md><b>{{ _("Copy as Markdown") }}</b><span>{{ _("Paste into an AI assistant or a ticket") }}</span></button>
+              <a role="menuitem" href="{{ md_url | e }}" target="_blank" rel="noopener"><b>{{ _("View as Markdown") }}</b><span>{{ _("Plain-text source of this page") }}</span></a>
+              {% endif %}
+              {% if settings.enable_ai_links %}
+              <a role="menuitem" href="{{ chatgpt_url | e }}" target="_blank" rel="noopener"><b>{{ _("Open in ChatGPT") }}</b><span>{{ _("Ask questions about this page") }}</span></a>
+              <a role="menuitem" href="{{ claude_url | e }}" target="_blank" rel="noopener"><b>{{ _("Open in Claude") }}</b><span>{{ _("Ask questions about this page") }}</span></a>
+              {% endif %}
+              {% if settings.enable_print %}
+              <button type="button" role="menuitem" data-dx-print><b>{{ _("Print or save as PDF") }}</b><span>{{ _("Uses your browser's print dialog") }}</span></button>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="dx-prose">{{ body_html }}</div>
+
+      {% if settings.enable_feedback %}
+      <section class="dx-feedback" data-dx-feedback>
+        <p class="dx-feedback-q">{{ _("Did this page answer your question?") }}</p>
+        <div class="dx-feedback-btns">
+          <button type="button" class="dx-btn dx-btn-quiet" data-helpful="1">{{ _("Yes") }}</button>
+          <button type="button" class="dx-btn dx-btn-quiet" data-helpful="0">{{ _("No") }}</button>
+        </div>
+        <form class="dx-feedback-form" hidden>
+          <label for="dx-fb-text">{{ _("What were you looking for? (optional)") }}</label>
+          <textarea id="dx-fb-text" rows="3" maxlength="2000"></textarea>
+          <button type="submit" class="dx-btn">{{ _("Send feedback") }}</button>
+        </form>
+        <p class="dx-feedback-done" hidden>{{ _("Thanks — your feedback was sent to the documentation team.") }}</p>
+      </section>
+      {% endif %}
+
+      {% if prev or next %}
+      <nav class="dx-pager" aria-label="{{ _('Previous and next page') }}">
+        {% if prev %}<a class="dx-pager-prev" href="{{ prev.url | e }}"><span>{{ _("Previous") }}</span><b>{{ prev.label | e }}</b></a>{% else %}<span></span>{% endif %}
+        {% if next %}<a class="dx-pager-next" href="{{ next.url | e }}"><span>{{ _("Next") }}</span><b>{{ next.label | e }}</b></a>{% endif %}
+      </nav>
+      {% endif %}
+
+      <footer class="dx-foot">
+        {% if last_updated %}<p>{{ _("Last updated") }} <time datetime="{{ last_updated_iso }}">{{ last_updated }}</time></p>{% endif %}
+        {% if settings.attribution_text %}<p class="dx-attrib">{{ settings.attribution_text | e }}</p>{% endif %}
+        {% if settings.footer_text %}<p>{{ settings.footer_text | e }}</p>{% endif %}
+      </footer>
+      {% endif %}
+    </article>
+  </main>
+
+  <aside class="dx-toc" aria-label="{{ _('On this page') }}">
+    {% if toc %}
+    <div class="dx-toc-inner">
+      <p class="dx-toc-title">{{ _("On this page") }}</p>
+      <div class="dx-toc-rail"><span class="dx-toc-fill" data-dx-progress></span></div>
+      <ul>
+        {% for t in toc %}<li class="dx-toc-l{{ t.level }}"><a href="#{{ t.id | e }}" data-dx-toc="{{ t.id | e }}">{{ t.text | e }}</a></li>{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+
+{% if settings.enable_search %}
+<div class="dx-search" data-dx-search hidden>
+  <div class="dx-search-backdrop" data-dx-search-close></div>
+  <div class="dx-search-panel" role="dialog" aria-modal="true" aria-label="{{ _('Search documentation') }}">
+    <div class="dx-search-bar">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M13.2 13.2L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input type="search" data-dx-search-input placeholder="{{ _('Search {0}').format(space.title if space else brand_name) | e }}" autocomplete="off" spellcheck="false" aria-label="{{ _('Search') }}">
+      <button type="button" class="dx-kbd dx-kbd-btn" data-dx-search-close>Esc</button>
+    </div>
+    <label class="dx-search-scope"><input type="checkbox" data-dx-search-all> {{ _("Search every space") }}</label>
+    <ul class="dx-search-results" data-dx-search-results role="listbox"></ul>
+    <p class="dx-search-hint" data-dx-search-hint>{{ _("Type at least two characters. Use ↑ ↓ to move and Enter to open.") }}</p>
+  </div>
+</div>
+{% endif %}
+
+<div class="dx-toast" data-dx-toast role="status" aria-live="polite" hidden></div>
+<script>window.TNXG_DOCS = {{ js_config_json }};</script>
+<script src="/assets/thinknxg_docs/js/docs.js?v={{ asset_version }}" defer></script>
+</body>
+</html>
