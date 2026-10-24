@@ -329,7 +329,8 @@ class ImportJob:
             total = len(plan)
             frappe.db.set_value("Docs Import Log", self.log.name, "total_items", total)
             planned_slugs = [i["slug"] for i in plan if i["type"] == "Page"]
-            rb = _clone_with_resolver(utils.get_rebrander(), utils.make_slug_resolver({self.space.name: planned_slugs}))
+            rb = _for_imported(utils.get_rebrander(), self.base,
+                               utils.make_slug_resolver({self.space.name: planned_slugs}))
             self.say(f"{total} items ({len(planned_slugs)} pages) planned")
 
             delay = flt(self.settings.import_delay)
@@ -385,6 +386,20 @@ def _clone_with_resolver(rb, resolver):
     return clone
 
 
+def _source_origin(base_url):
+    parts = urlsplit(base_url or "")
+    return f"{parts.scheme}://{parts.netloc}" if parts.scheme and parts.netloc else None
+
+
+def _for_imported(rb, base_url, resolver=None):
+    """Rebrander for imported text: site-relative links (/erpnext/x) into spaces we host are
+    mapped to our routes; links into upstream spaces we don't host become absolute."""
+    clone = _clone_with_resolver(rb, resolver or rb.slug_resolver)
+    clone.relative_origin = _source_origin(base_url)
+    clone.own_routes = set(utils.get_space_routes(refresh=True))
+    return clone
+
+
 # ------------------------------------------------------------ re-branding job
 def reapply_branding(space=None):
     """Regenerate content from the stored originals using the current rules."""
@@ -397,16 +412,23 @@ def reapply_branding(space=None):
                           fields=["name", "title", "sidebar_label", "description", "content", "source_content",
                                   "source_title", "skip_rebrand", "lock_from_import", "space"],
                           limit_page_length=0)
+    bases = dict(frappe.get_all("Docs Space", fields=["name", "source_base_url"], as_list=True))
+    imported_rb = {}
     changed = 0
     for r in rows:
         if cint(r.skip_rebrand):
             continue
+        prb = rb
+        if r.source_content and bases.get(r.space):
+            if r.space not in imported_rb:
+                imported_rb[r.space] = _for_imported(rb, bases[r.space])
+            prb = imported_rb[r.space]
         vals = {}
         if r.source_content and not cint(r.lock_from_import):
-            vals["content"] = rb.markdown(r.source_content)
+            vals["content"] = prb.markdown(r.source_content)
             vals["title"] = rb.text(r.source_title or r.title)
         else:
-            vals["content"] = rb.markdown(r.content or "")
+            vals["content"] = prb.markdown(r.content or "")
             vals["title"] = rb.text(r.title)
         if r.sidebar_label:
             vals["sidebar_label"] = rb.text(r.sidebar_label)

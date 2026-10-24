@@ -121,6 +121,40 @@ class TestRebrand(unittest.TestCase):
         self.assertIn("https://frappe.io.", out)  # unmapped URL left intact
         self.assertIn('src="/thinknxgerp/x" alt="thinkNXG ERP screen"', out)
 
+    def test_related_topics_relative_links(self):
+        # verbatim shape of upstream "Related topics" sections
+        md = (
+            "## Related topics\n\n"
+            "- [Sales Order](/erpnext/sales-order)\n"
+            "- [Credit Note and Sales Return](/erpnext/sales-return)\n"
+            "- [Payment Ledger](</erpnext/user/manual/en/payment_ledger>)\n"
+            "- [Leave Application](/hr/leave-application#approval)\n"
+            "- [CRM Lead](/crm/lead)\n"
+            "- [Already ours](/thinknxgerp/journal-entry)\n"
+            "- [Selling in UOM](//docs.frappe.io/erpnext/Selling-in-different-UOM)\n\n"
+            "![shot](/files/si.png) and <a href=\"/erpnext/customer\">Customer</a>\n"
+        )
+        r = Rebrander(space_maps=[("https://docs.frappe.io/erpnext", "/thinknxgerp"),
+                                  ("https://docs.frappe.io/hr", "/thinknxghr")],
+                      slug_resolver=lambda t, s: {"user/manual/en/payment_ledger": "payment_ledger"}.get(s),
+                      relative_origin="https://docs.frappe.io", own_routes={"thinknxgerp", "thinknxghr"})
+        out = r.markdown(md)
+        self.assertIn("[Sales Order](/thinknxgerp/sales-order)", out)
+        self.assertIn("[Credit Note and Sales Return](/thinknxgerp/sales-return)", out)
+        self.assertIn("[Payment Ledger](</thinknxgerp/payment_ledger>)", out)
+        self.assertIn("[Leave Application](/thinknxghr/leave-application#approval)", out)
+        self.assertIn("[CRM Lead](https://docs.frappe.io/crm/lead)", out)  # not hosted → absolute, still works
+        self.assertIn("[Already ours](/thinknxgerp/journal-entry)", out)
+        self.assertIn("[Selling in UOM](/thinknxgerp/selling-in-different-uom)", out)
+        self.assertIn("![shot](/files/si.png)", out)
+        self.assertIn('<a href="/thinknxgerp/customer">Customer</a>', out)
+        self.assertNotIn("](/erpnext", out)
+        # without relative_origin (hand-typed pages) unknown site paths are left alone
+        plain = Rebrander(space_maps=[("https://docs.frappe.io/erpnext", "/thinknxgerp")])
+        self.assertEqual(plain.url("/contact"), "/contact")
+        self.assertEqual(plain.url("/erpnext/sales-order"), "/thinknxgerp/sales-order")
+        self.assertEqual(plain.url("/erpnext-blog/x"), "/erpnext-blog/x")
+
     def test_anchor_and_resolver(self):
         r = Rebrander(space_maps=[("https://docs.frappe.io/erpnext", "/thinknxgerp")],
                       slug_resolver=lambda target, slug: {"old/page": "page"}.get(slug))

@@ -10,8 +10,12 @@ Pure Python core. Markdown is tokenized so that
 """
 
 import re
+from urllib.parse import urlsplit
 
 from thinknxg_docs.source_parser import normalize_slug
+
+# First path segments that always belong to this site, never to the upstream docs.
+LOCAL_PREFIXES = {"files", "private", "assets", "api", "app", "llms.txt", "docs-sitemap.xml"}
 
 DEFAULT_TEXT_RULES = [
     # find, replace, match_case, whole_word
@@ -61,7 +65,8 @@ class Rebrander:
     slug_resolver: optional callable(target_prefix, slug) -> slug for fixing renamed/moved pages
     """
 
-    def __init__(self, text_rules=None, url_rules=None, space_maps=None, slug_resolver=None):
+    def __init__(self, text_rules=None, url_rules=None, space_maps=None, slug_resolver=None,
+                 relative_origin=None, own_routes=()):
         rules = []
         for r in (DEFAULT_TEXT_RULES if text_rules is None else text_rules):
             if isinstance(r, dict):
@@ -95,12 +100,21 @@ class Rebrander:
             if not base:
                 continue
             variants = {base}
-            if base.startswith("https://"):
-                variants.add("http://" + base[8:])
+            parts = urlsplit(base)
+            if parts.scheme in ("http", "https") and parts.netloc:
+                variants.add("http://" + base.split("://", 1)[1])
+                variants.add("https://" + base.split("://", 1)[1])
+                variants.add("//" + parts.netloc + parts.path)  # protocol-relative
+                if parts.path.strip("/"):
+                    variants.add(parts.path.rstrip("/"))  # site-relative: /erpnext/sales-order
             for v in variants:
                 maps.append((v, (target or "").rstrip("/")))
         self.space_maps = sorted(maps, key=lambda x: len(x[0]), reverse=True)
         self.slug_resolver = slug_resolver
+        # Site-relative links into upstream spaces we don't host (e.g. /crm/lead) are made
+        # absolute so they keep working. Only set this for imported content.
+        self.relative_origin = (relative_origin or "").rstrip("/") or None
+        self.own_routes = set(own_routes or ())
 
     # ----------------------------------------------------------- text
     def text(self, s):
@@ -129,6 +143,10 @@ class Rebrander:
         for find, repl in self.url_rules:
             if u.startswith(find):
                 return repl + u[len(find):]
+        if self.relative_origin and u.startswith("/") and not u.startswith("//"):
+            first = u[1:].split("/", 1)[0].split("#", 1)[0].split("?", 1)[0]
+            if first and first not in self.own_routes and first not in LOCAL_PREFIXES:
+                return self.relative_origin + u
         return u
 
     def _bare(self, u):

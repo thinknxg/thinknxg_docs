@@ -25,7 +25,7 @@ from werkzeug.wrappers import Response
 from thinknxg_docs import utils
 
 TEMPLATE = "thinknxg_docs/templates/docs/page.html"
-ASSET_VERSION = "1.0.0"
+ASSET_VERSION = "1.0.1"
 
 
 def _js(obj):
